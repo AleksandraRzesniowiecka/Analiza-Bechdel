@@ -1,0 +1,734 @@
+---
+format: 
+  pdf:
+    pdf-engine: xelatex
+    toc: false
+    code: false
+    number-sections: true
+    include-in-header: 
+      - text: |
+          \usepackage{fontspec}
+          \setmainfont{Times New Roman}
+          \setsansfont{Times New Roman} 
+          \usepackage{fancyhdr}
+geometry: margin=2.5cm
+lang: pl
+fontsize: 12pt
+---
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\fancyhead[L]{Analiza Testu Bechdel}
+\fancyhead[R]{\thepage}
+\newpage
+\tableofcontents
+\newpage
+
+# Wstęp
+
+**Hollywoodzkie historie: Czy równouprawnienie na ekranie idzie w parze z sukcesem finansowym?**
+
+Wyobraźmy sobie, że zasiadamy w wygodnym kinowym fotelu. Światła gasną, a na ekranie zaczyna się historia. Przez dziesięciolecia Hollywood karmiło nas opowieściami o wielkich bohaterach, jednak gdybyśmy na chwilę zatrzymali obraz i przyjrzeli się tylko postaciom kobiecym, moglibyśmy poczuć niemałe zaskoczenie. Czy te kobiety mają imiona? Czy ze sobą rozmawiają? A jeśli tak, to czy ich rozmowa dotyczy czegoś więcej niż **tylko mężczyzny**, u boku którego występują?
+
+**Test Bechdel** to rodzaj lustra, które przystawiamy do wielkiego ekranu. Odsłania on prawdę o tym, jak często kino zapomina o oddaniu głosu kobietom, ograniczając ich rolę do rozmów jedynie o męskich bohaterach.
+
+Należy również zauważyć, że w świecie wielkich wytwórni filmowych emocje i wartości artystyczne muszą spotkać się z twardą rzeczywistością pieniądza. W tym świecie często spotykamy się ze stereotypem, że "kino kobiece" to kategoria niższej kategorii ryzyka, a także niższych nakładów. Panuje przeświadczenie, że bezpieczniej jest zainwestować ogromne sumy w męskiego bohatera, ponieważ opowieści o kobietach nie mają tej samej siły przyciągania przed ekrany milionów widzów.
+
+## Cel analizy
+
+Właśnie tutaj zaczyna się nasza opowieść. Celem tej analizy nie jest jedynie sprawdzenie, ile filmów „zaliczyło” omawiany test, ale przede wszystkim odkrycie prawdy o zależności między sprawiedliwą reprezentacją kobiet a sukcesem finansowym w fabryce snów.
+
+Chcemy sprawdzić, czy Hollywood rzeczywiście traktuje filmy przechodzące test Bechdel „po macoszemu”, dając im mniejsze budżety na start. Czy te produkcje faktycznie zarabiają mniej, czy może wręcz przeciwnie?
+
+Będziemy szukać odpowiedzi na postawione pytania badawcze w kolejnym akapicie.
+
+## Postawione pytania badawcze
+
+1.  **Czy równość popłaca? Związek między testem Bechdel a zyskami.** Czy istnieje statystycznie istotna różnica w wysokości międzynarodowych przychodów (skorygowanych o inflację) pomiędzy filmami zdającymi a niezdającymi testu Bechdel?
+
+2.  **Ewolucja czy stagnacja? Zmiany w czasie.** Czy na przestrzeni badanych lat (1970–2013) obserwuje się wyraźny trend wzrostowy wsród filmów spełniających kryteria testu Bechdel?
+
+3.  **Budżetowa dyskryminacja? Kto dostaje więcej pieniędzy na start.** Czy filmy, które nie zdają testu Bechdel (*FAIL*), dysponują przeciętnie wyższymi budżetami produkcyjnymi (wg wartości dolara z 2013 r.) niż filmy zdające ten test?
+
+4.  **Struktura porażki – dlaczego filmy nie zdają testu Bechdel?** Która ze szczegółowych przyczyn niezdania testu (brak kobiet, brak rozmów, czy rozmowy o mężczyznach) występuje w analizowanym zbiorze najczęściej?
+
+\newpage
+
+# Opis zbioru danych
+
+## Zbiór danych `movies.csv`
+
+Sercem naszej analizy jest zbiór `movies.csv`. Jest to obszerna baza danych, która rzuca światło na relację między **sukcesem kasowym a reprezentacją kobiet w filmach**. Mamy do dyspozycji materiał badawczy składający się z 1794 unikalnych tytułów (rekordów), z których każdy został szczegółowo opisany w 15 kategoriach (zmiennych). Taka struktura danych pozwala na wielowymiarową analizę historii kina, łącząc twarde dane finansowe z perspektywą socjologiczną, jaką oferuje **test Bechdel**.
+
+Jednak czym jest **test Bechdel**? Zgodnie z wiedzą opisaną na [Wikipedii](https://en.wikipedia.org/wiki/Bechdel_test), służy on jako narzędzie do oceny **widoczności i roli kobiet w dziełach kultury**. Często wykorzystuje się go, aby uwypuklić problem nierówności płci oraz przejawy seksizmu w mediach. Zasada jego działania opiera się na prostym, trzystopniowym sprawdzianie. Aby film zdał egzamin, musi spełniać łącznie następujące warunki:
+
+1.  W dziele muszą pojawić się przynajmniej dwie kobiety (często z wymogiem, by były to postacie nazwane z imienia).
+2.  Musi dojść między nimi do rozmowy.
+3.  Temat tej konwersacji musi dotyczyć czegokolwiek innego niż mężczyźni.
+
+
+## Pochodzenie danych
+
+Każda wyprawa, również ta w głąb statystyki, potrzebuje wiarygodnej mapy. Naszą znalazłyśmy na portalu [FiveThirtyEight](https://data.fivethirtyeight.com/), który słynie na całym świecie z tego, że o polityce, sporcie i kulturze opowiada językiem liczb. To właśnie tam, w ramach projektu „Creating The Next Bechdel Test”, powstało zestawienie, z którego korzystamy.
+
+Autorzy wykonali bardzo precyzyjną pracę, łącząc dwa zupełnie różne światy:
+
+-   **Głos widzów**: Wykorzystali wyniki z serwisu [Bechdel Test Movie List](https://www.google.com/search?q=bechdeltest.com), gdzie tysiące kinomanów wspólnie ocenia filmy pod kątem roli kobiet.
+
+-   **Twarde liczby z portfela**: Dołożyli do tego precyzyjne dane finansowe pochodzące z profesjonalnego serwisu branżowego [The Numbers](https://www.the-numbers.com/).
+
+Dzięki temu połączeniu, w pliku `movies.csv` mamy szansę zobaczyć, czy artystyczna wolność i sprawiedliwa reprezentacja bohaterek idą w parze z finansowym sukcesem.
+
+Ważne jest również to, że FiveThirtyEight udostępnia te dane na **otwartej licencji**. Dzięki temu każdy zainteresowany może wziąć te liczby pod lupę, wyciągnąć własne wnioski i podzielić się nimi ze światem, o ile tylko wspomnimy, kto był ich pierwotnym odkrywcą.
+
+## Struktura i zmienne
+
+**Anatomia bazy danych: Z czego składa się nasza opowieść?**
+
+Zanim zaczniemy szukać odpowiedzi na postawione pytania badawcze, musimy dokładnie poznać nasz „materiał dowodowy”. Zbiór danych `movies.csv` to spis, w którym każdy z 1794 filmów opowiada swoją historię za pomocą konkretnych cech. Możemy je podzielić na trzy kluczowe części:
+
+**I Paszport Filmu**
+
+To tutaj nadajemy każdej produkcji tożsamość. Te zmienne pozwalają nam umieścić film na osi czasu i upewnić się, że nie pomylimy go z żadnym innym.
+
+-   **Tytuł** (*Tytul*): To wizytówka filmu. Choć w teorii nazwa może być dowolna, w naszej bazie mamy 1768 unikalnych tytułów. Jednostką jest tutaj tekst. Ciekawostką jest, że niektóre nazwy (jak Titanic) pojawiają się dwukrotnie. To właśnie tutaj do akcji wkracza kod IMDb.
+
+-   **Kod IMDb** (*Kod_IMDb*): Każdy film posiada unikalny identyfikator. Teoretycznie może to być dowolny ciąg znaków zgodny ze standardem bazy IMDb (zaczynający się od „tt”). W naszym zbiorze zapewnia nam on stuprocentową pewność, że analizujemy właściwą produkcję.
+
+-   **Rok produkcji** (*Rok_produkcji*): Nasz kompas czasu. Wyrażony w latach. Teoretycznie filmy mogą pochodzić z dowolnego roku od narodzin kina (1895), jednak nasza historia skupia się na „erze nowożytnej”. Zastane wartości obejmują okres od 1970 do 2013 roku, ze średnią przypadającą na rok 2002.
+
+**II Społeczny Egzamin**
+
+W tej części sprawdzamy „charakter” filmu. To zmienne jakościowe (kategoryczne), które opisują relacje między postaciami. Nie posiadają one jednostek miary, lecz konkretne poziomy.
+
+-   **Werdykt** (*Werdykt*): To ostateczna ocena, "czarno-biała decyzja". Teoretycznie możliwe są tylko dwie wartości: *PASS* (zdał) lub *FAIL* (nie zdał).
+
+-   **Wynik prosty** (*Wynik_prosty*): Tu zaglądamy głębiej. Zmienna ta przyjmuje pięć teoretycznych wartości, które mówią nam, na jakim etapie film „poległ”:
+
+    -   *ok* (zaliczone – 803 filmy),
+
+    -   *notalk* (kobiety są, ale nie rozmawiają ze sobą – 514 filmów),
+
+    -   *men* (rozmawiają, ale tylko o mężczyznach – 194 filmy),
+
+    -   *nowomen* (brak co najmniej dwóch kobiet z imionami – 141 filmów),
+
+    -   *dubious* (wynik dyskusyjny – 142 filmy).
+
+-   **Wynik szczegółowy** (*Wynik_szczegolowy*): To najbardziej drobiazgowa zmienna. Teoretycznie przyjmuje ona aż 10 poziomów, rozszerzając podstawowe kategorie o dopisek „-disagree” (np. ok-disagree). Pozwala to uchwycić niuanse i różnice w opiniach widzów, których nie widać na pierwszy rzut oka.
+
+**III Złoty Skarbiec**
+
+Ostatnia część to twarda waluta. Wszystkie kwoty wyrażone są w dolarach amerykańskich (USD).
+
+-   **Budżet i Przychody Nominalne** (*Budzet_nominalny*, *Przychod_USA*, *Przychod_Swiat*): To kwoty „z epoki”, czyli takie, jakie widniały na czekach w dniu premiery. Choć ciekawe historycznie, są trudne do porównania (średni budżet nominalny to 44,8 miliona dolarów).
+
+-   **Wartości Realne** (*Budzet_2013*, *Przychod_USA_2013*, *Przychod_Swiat_2013*): To serce naszej analizy finansowej. Wszystkie kwoty zostały przeliczone na wartość dolara z 2013 roku. Dzięki temu możemy sprawiedliwie porównać budżet *Gwiezdnych Wojen* z lat 70. z dzisiejszymi superprodukcjami.
+
+Co mówią nam statystyki tych wartości?
+
+-   **Budżet** (*Budzet_2013*): Teoretycznie od zera do setek milionów. W naszych danych średnia to 55,5 miliona dolarów. Mamy tu jednak ogromną rozpiętość: od skromnych produkcji za 8,6 tysiąca dolarów po giganty kosztujące 461 milionów dolarów.
+
+-   **Zysk krajowy** (*Przychod_USA_2013*): Pokazuje popularność filmu w USA. Teoretycznie od zera wzwyż. Średnio filmy zarabiały 95,1 miliona dolarów, a rekordzista osiągnął oszałamiające 1,77 miliarda dolarów.
+
+-   **Zysk światowy** (*Przychod_Swiat_2013*): To ostateczna miara sukcesu. Średnio filmy zarabiają 197,8 miliona dolarów, ale rekordziści przebijają sufit z wynikiem 3,17 miliarda dolarów. W danych zauważyłyśmy kilkanaście braków (*NA*), które musimy pominąć, by nie zakłamać obrazu sukcesu.
+
+Na koniec mamy postacie drugoplanowe: *Kod_analityczny*, *Kod_okresu* i *Kod_dekady*. Są to zmienne bezwymiarowe (indeksy), służące jako drogowskazy dla programu. *Kod_okresu* może teoretycznie przyjąć wartości od 1 do 5, a *Kod_dekady* od 1 do 3. Statystyki pokazują, że najwięcej danych posiadamy dla najnowszych okresów (kody 1 i 2), co pozwala na bardzo precyzyjną analizę współczesnego kina.
+
+## Czyszczenie danych
+
+```{r}
+#| label: setup-and-cleaning
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(scales)
+library(knitr)
+library(kableExtra)
+
+theme_set(theme_minimal())
+
+if (file.exists('movies.csv')) {
+  df_raw <- read_csv('movies.csv', show_col_types = FALSE)
+
+  names(df_raw) <- gsub("\\$", "", names(df_raw)) 
+  names(df_raw) <- make.names(names(df_raw), unique = TRUE) 
+  
+  df <- df_raw %>% 
+    rename(
+      Rok_produkcji = year,
+      Kod_IMDb = imdb,
+      Tytul = title,
+      Wynik_szczegolowy = test,
+      Wynik_prosty = clean_test,
+      Werdykt = binary,
+      Budzet_nominalny = budget,
+      Przychod_USA = domgross,
+      Przychod_Swiat = intgross,
+      Budzet_2013 = budget_2013,
+      Przychod_USA_2013 = domgross_2013,
+      Przychod_Swiat_2013 = intgross_2013,
+      Kod_analityczny = code,
+      Kod_okresu = period.code,
+      Kod_dekady = decade.code
+    ) %>%
+    mutate(
+      Werdykt = as.factor(Werdykt),
+      Wynik_prosty = as.factor(Wynik_prosty),
+      Wynik_szczegolowy = as.factor(Wynik_szczegolowy),
+      Przychod_USA = as.numeric(Przychod_USA),
+      Przychod_Swiat = as.numeric(Przychod_Swiat),
+      Przychod_USA_2013 = as.numeric(Przychod_USA_2013),
+      Przychod_Swiat_2013 = as.numeric(Przychod_Swiat_2013)
+    )
+
+  df_clean <- df %>% 
+    filter(!is.na(Przychod_Swiat_2013)) %>%
+    filter(Budzet_2013 > 0) 
+
+  liczba_brakow_po_czyszczeniu <- colSums(is.na(df_clean))
+  
+  message("Dane zostały pomyślnie wyczyszczone.")
+  message(paste("Liczba filmów przed czyszczeniem:", nrow(df)))
+  message(paste("Liczba filmów po usunięciu braków (NA):", nrow(df_clean)))
+
+} else {
+  warning("Nie znaleziono pliku movies.csv!")
+}
+```
+
+Każdy analityk wie, że surowe dane są jak znalezisko na strychu, a więc pełne skarbów, lecz przykryte grubą warstwą kurzu i nieładu. Nasz zbiór `movies.csv` nie był wyjątkiem. Abyśmy mogły wyciągnąć z niego rzetelne wnioski na temat Hollywood, musiałyśmy przeprowadzić proces „konserwacji i renowacji”.
+
+**I Przełamanie barier językowych i technicznych**
+
+Nasza praca zaczęła się od zmiany nazewnictwa. Wyobraźmy sobie, że każda kolumna w tabeli miała "metkę" z napisem w języku angielskim, a dodatkowo gdzieniegdzie pojawiały się znaki dolara (*\$*). Pierwszym ruchem było usunięcie tych symboli i nadanie kolumnom polskich nazw. Zamiast technicznego żargonu np. *domgross*, mamy teraz czytelny *Przychod_USA*. Dzięki temu nasza tabela stała się zrozumiała dla każdego, kto do niej zajrzy, a program przestał potykać się o znaki specjalne.
+
+**II Nauka rozumienia kontekstu**
+
+Następnie musiałyśmy nauczyć nasz program, jak ma interpretować to, co widzi.
+
+-   **Napisy**: Słowa takie jak *PASS* (zdał) czy *FAIL* (nie zdał) w kolumnie *Werdykt* przestały być traktowane jak zwykłe napisy. Zamieniłyśmy je na tzw. faktory. To tak, jakbyśmy pogrupowały książki na półkach. Teraz program wie, że to konkretne kategorie, które będziemy ze sobą porównywać na wykresach.
+
+-   **Prawdziwe liczby**: Finanse to twarde dane, ale w surowym pliku kwoty czasem były zapisane w sposób, który komputer brał za tekst. Wymusiłyśmy zmianę ich typu na numeryczny. To był kluczowy moment, ponieważ tam, gdzie wcześniej była „pusta przestrzeń” lub błąd, teraz mamy jasny sygnał: *NA* (brak danych).
+
+**III Ostateczna selekcja (Walka z brakami)**
+
+Na samym końcu stanęłyśmy przed dylematem: co zrobić z filmami, o których nie wiemy wszystkiego? Jeśli film nie ma podanych zarobków (*NA*), jego obecność w analizie finansowej mogłaby zafałszować wyniki, drastycznie zaniżając średnią.
+
+Postanowiłyśmy więc przeprowadzić selekcję. Usunęłyśmy te produkcje, które miały puste pola w kluczowych rubrykach finansowych. Dzięki temu mamy pewność, że każdy film biorący udział w badaniu posiada kompletny „paszport finansowy”.
+
+Obecnie nasz zbiór danych jest czysty, spójny i gotowy, by odpowiedzieć na najtrudniejsze pytania o pieniądze i reprezentację kobiet w kinie.
+
+## Jakość i braki danych
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+braki <- colSums(is.na(df))
+
+data.frame(Zmienna = names(braki), Liczba_brakow = braki) %>%
+  kable(
+    col.names = c("Nazwa Zmiennej", "Liczba pustych wierszy"),
+    caption = "Zestawienie brakujących danych w zbiorze `movies.csv`.",
+    booktabs = TRUE,
+    row.names = FALSE,
+  ) %>%
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE)
+```
+
+Jak wynika z powyższego zestawienia, fundament bazy danych `movies.csv` jest solidny, gdyż kluczowe zmienne opisowe są kompletne. Tabela wskazuje jednak na pewne luki w sekcji finansowej, gdzie odnotowano braki dla zmiennych *Przychod_USA* (17 rekordów) oraz *Przychod_Swiat* (11 rekordów). Są to liczby marginalne, które nie wpłyną na rzetelność wyników. Uwagę zwracają natomiast widoczne na szczycie listy braki w kolumnach technicznych (*Kod_okresu*, *Kod_dekady*), wynoszące 179 wierszy. Oznacza to, że około 10% filmów nie posiada przypisania do konkretnego przedziału czasowego, co będziemy musiały uwzględnić przy analizie trendów.
+
+\newpage
+
+# Analiza pierwszego pytania badawczego
+
+**Start Produkcji**
+
+Choć kino często postrzegamy przez pryzmat artyzmu i emocji, jego fundamentem jest twardy biznes. Proces powstawania każdego filmu rozpoczyna się od kluczowej decyzji finansowej, czyli przyznania budżetu. To ten moment w dużej mierze determinuje przyszły los produkcji: jakość efektów specjalnych, gaże dla gwiazd oraz zasięg kampanii marketingowej.
+
+W tym rozdziale cofniemy się do samego początku łańcucha produkcyjnego. Analiza budżetów pozwoli nam sprawdzić, czy już na etapie planowania widać systemową dysproporcję w alokacji środków. Zweryfikujemy, czy w Hollywood panuje przekonanie, że filmy „męskie” są bezpieczniejszą inwestycją, podczas gdy produkcje spełniające kryteria testu Bechdel muszą radzić sobie z mniejszym zapleczem finansowym.
+
+**Postawione pytanie badawcze**
+
+**Budżetowa dyskryminacja? Kto dostaje więcej pieniędzy na start.** Czy filmy, które nie zdają testu Bechdel (*FAIL*), dysponują przeciętnie wyższymi budżetami produkcyjnymi (wg wartości dolara z 2013 r.) niż filmy zdające ten test?
+
+**Hipoteza**
+
+Filmy, które nie zdają testu (*FAIL*), otrzymują średnio wyższe budżety produkcyjne.
+
+**Badania**
+
+Tu następuje analiza zmiennej ciągłej względem kategorycznej, a dokładnie porównanie rozkładu wartości zmiennej *Budzet_2013* (budżet skorygowany o inflację) w podziale na grupy wyznaczone przez zmienną *Werdykt* (wynik testu *PASS*/*FAIL*).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+
+stats_budzet <- df %>%
+  group_by(Werdykt) %>%
+  summarise(
+    `Średni budżet` = mean(Budzet_2013, na.rm = TRUE),
+    `Mediana budżetu` = median(Budzet_2013, na.rm = TRUE),
+    `Liczba filmów` = n()
+  )
+
+kable(stats_budzet, 
+      digits = 0, 
+      format.args = list(big.mark = " "),
+      caption = "Statystyki budżetów produkcyjnych (wartości w USD z 2013 r.)",
+      booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+Analiza danych finansowych zawartych w powyższej tabeli jednoznacznie potwierdza postawioną hipotezę. Istnieje widoczna i znacząca dysproporcja w finansowaniu filmów w zależności od ich wyniku w teście Bechdel.
+
+Średnia wartość budżetu dla filmów niespełniających kryteriów testu (*FAIL*) wynosi blisko 63 mln USD, podczas gdy dla filmów zdających test (*PASS*) jest to kwota o ponad 16 milionów niższa (blisko 46,3 mln USD).
+
+Jeszcze wyraźniej różnicę tę widać na przykładzie mediany, która dla grupy niespełniającej kryteria wynosi 44 mln USD, a dla grupy spełniającej je, jedynie 31,5 mln USD. Oznacza to, że na etapie planowania produkcji, budżety filmów typu *FAIL* są o ok. 40% wyższe od budżetów filmów typu *PASS*.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+# print(((44 - 31.5)/31.5)*100) # o tyle więcej jest większy budżet męskich filmów niż kobiecych
+```
+
+Dane te sugerują, że w przemyśle filmowym wysokobudżetowe filmy akcji i science-fiction są wciąż projektowane głównie z myślą o męskich bohaterach, podczas gdy filmy z rozbudowanymi rolami kobiecymi są częściej realizowane jako produkcje o mniejszej skali finansowej.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+#| dev: cairo_pdf    
+
+ggplot(df, aes(x = Werdykt, y = Budzet_2013, fill = Werdykt)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) + 
+  scale_y_continuous(labels = dollar_format(suffix = "", prefix = "$")) + 
+  scale_fill_manual(values = c("FAIL" = "#DC143C", "PASS" = "#7FFF00")) + 
+  labs(
+    title = "Porównanie budżetów skorygowanych o inflację",
+    x = "Wynik testu Bechdel",
+    y = "Budżet (USD)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    text = element_text(family = "Times New Roman") 
+  )
+```
+
+Wykres pudełkowy dostarcza nam trzech kluczowych informacji:
+
+1.  **Różnica w medianach**: Mediana w czerwonym pudełku znajduje się wyraźnie wyżej niż w zielonym. Oznacza to, że typowy (przeciętny) film, który nie zdaje testu Bechdel, dysponuje znacznie wyższym budżetem niż typowy film zdający ten test. Potwierdza to hipotezę, że producenci chętniej inwestują duże kwoty w filmy skoncentrowane na mężczyznach.
+
+2.  **Rozstęp międzykwartylowy**: Czerwone pudełko jest znacznie wyższe i rozciągnięte w górę. Oznacza to, że w grupie filmów "męskich" występuje znacznie większa różnorodność budżetowa, z mocnym przesunięciem w stronę wysokich kwot. Filmy kobiece są bardziej "skupione" w niższych przedziałach finansowych, ponieważ rzadziej dostają szansę na bycie drogą superprodukcją.
+
+3.  **Wartości odstające**: Nad czerwonym pudełkiem znajduje się mnóstwo wartości odstających sięgających bardzo wysoko (nawet do 200-400 mln USD). Są to tzw. **blockbustery** (superprodukcje). Wykres pokazuje, że niemal wszystkie najdroższe filmy w historii kina znajdują się w kategorii *FAIL*. Filmy z kategorii *PASS* mają znacznie mniej takich "hitów budżetowych", co sugeruje, iż powyżej pewnej kwoty producenci boją się ryzykować filmem z wiodącymi rolami kobiecymi.
+
+**Wnioski**
+
+Dane liczbowe jednoznacznie potwierdzają hipotezę o "budżetowej dyskryminacji". Najdroższe filmy w historii kina to niemal wyłącznie produkcje, które zdają test Bechdel. Filmy z kobietami rzadko otrzymują budżety przekraczające 100 mln USD.
+
+Wytwórnie filmowe są skłonne podjąć ogromne ryzyko finansowe (inwestując setki milionów dolarów), ale tylko wtedy, gdy film koncentruje się na męskich bohaterach. W przypadku filmów kobiecych strategia inwestycyjna jest znacznie bardziej asekuracyjna.
+
+Podsumowując, **równouprawnienie na ekranie nie idzie w parze z równouprawnieniem w księgowości**. Już na etapie "zielonego światła" dla produkcji, filmy promujące obecność kobiet startują z gorszej pozycji finansowej, co może bezpośrednio przekładać się na ich jakość techniczną (efekty specjalne) oraz zasięg kampanii marketingowej.
+
+\newpage
+
+# Analiza drugiego pytania badawczego
+
+**Ewolucja Społeczna: *Czas***
+
+Skoro wiemy, jak jest z pieniędzmi, zobaczmy, jak zmieniała się mentalność twórców na przestrzeni lat. Czy jest lepiej? I dlaczego filmy kiedyś nie zdawałay test, a dlaczego nie zdają go dziś?
+
+Jak dobrze wiemy, mentalność społeczeństwa na temat równouprawnienia zmieniała się na przestrzeni kolejnych dekad. Wraz z rozwojem technologii i upowszechnieniem kina oraz platform dystrybucji, filmy stały się łatwiej dostępne dla „przeciętnego zjadacza chleba”, a grono ich odbiorców zaczęło obejmować coraz szersze grupy, w tym w większym stopniu kobiety. Można więc przypuszczać, że rosnąca świadomość społeczna oraz dyskusja wokół ról płciowych mogły wpływać także na sposób przedstawiania kobiet w produkcjach filmowych.
+
+W tym punkcie zbadamy, czy te zmiany znajdują odzwierciedlenie w danych. Następujące pytanie bada postęp społeczny.
+
+**Postawione pytanie badawcze**
+
+**Ewolucja czy stagnacja? Zmiany w czasie.** Czy na przestrzeni badanych lat (1970–2013) obserwuje się wyraźny trend wzrostowy wsród filmów spełniających kryteria testu Bechdel?
+
+**Hipoteza**
+
+Z biegiem lat odsetek filmów zdających test rośnie.
+
+**Badania**
+
+Przeanalizujemy teraz zmienną kategoryczną w czasie, a dokładniej sprawdzimy, jak na przestrzeni lat zmienia się odsetek filmów, które spełniają kryteria testu Bechdel. Na podstawie zmiennej *Rok_produkcji* utworzono zmienną **Dekada**, grupując filmy wg. dziesięcioleci. Dla każdej dekady zliczono łączną liczbę filmów, liczbę produkcji z wynikiem *PASS* oraz obliczono procentowy udział filmów przechodzących test Bechdel w danym okresie, a otrzymane wyniki umieszczono w tabeli poniżej.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+
+library(dplyr)
+library(ggplot2)
+
+
+df_dekady <- df %>%
+  mutate(
+    Rok = as.numeric(Rok_produkcji),
+    Dekada = (Rok %/% 10) * 10
+  ) %>%
+  group_by(Dekada) %>%
+  summarise(
+    Liczba_filmow = n(),
+    Liczba_PASS   = sum(Werdykt == "PASS"),
+    Proc_PASS     = 100 * Liczba_PASS / Liczba_filmow,
+    .groups = "drop"
+  )
+
+df_dekady %>%
+  kable(
+    digits = 1,
+    caption = "Odsetek filmów z wynikiem PASS w kolejnych dekadach",
+    col.names = c("Dekada", "Liczba filmów ogółem", "Liczba PASS", "Procent PASS"),
+    booktabs = TRUE
+  ) %>%
+  kable_styling(
+    latex_options = c("striped", "hold_position")
+  )
+```
+
+Analiza tabeli nr 3 jednoznacznie potwierdza postawioną hipotezę, czyli czy na przestrzeni kolejnych dekad obserwujemy wzrost odsetka filmów, które pozytywnie przechodzą test Bechdel. Największy odsetek tych produkcji możemy zauważyć w dekadzie 2000-2009. Jedynie w ostatniej dekadzie, obejmującej lata 2010–2013 (na podstawie analizy zmiennej *Rok_produkcji* można stwierdzić, że ostatni film w bazie został wyprodukowany w 2013 roku), zauważalny jest niewielki spadek w porównaniu z latami dwutysięcznymi. Można to jednak wiązać zarówno z faktycznym zahamowaniem trendu wzrostowego, jak i z ograniczeniami samego zbioru danych (krótszy okres oraz mniejsza liczba obserwacji w ostatniej dekadzie). W dekadzie 1970-1979 oraz 1980-1989 procenty filmów są rekordowo małe w porównaniu z innymi badanymi okresami (następująco: 25.9% oraz 28.8%). Świadczy to o kulturze panującej w tamtych czasach, która nie priorytetyzowała obecności kobiet na wielkich ekranach.
+
+Dla jasności i lepszej wizualizacji, zamieścimy teraz powyższe dane na wykresie słupkowym.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+#| dev: cairo_pdf 
+
+library(ggplot2)
+
+ggplot(df_dekady, aes(x = factor(Dekada), y = Proc_PASS)) +
+  geom_col(fill = "pink") +
+  labs(
+    title = "Odsetek filmów z wynikiem PASS w kolejnych dekadach",
+    x = "Lata",
+    y = "Procent filmów z wynikiem PASS"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    text = element_text(family = "Times New Roman") 
+  )
+```
+
+Jak widać na zamieszczonym wykresie słupkowym, procent filmów, w których stawia się na większą ekspozycję płci żeńskiej, zwiększa się wraz z przebiegiem kolejnych dekad, aby osiągnąć swój peak w dekadzie obejmującej lata 2000-2009. Na podstawie widocznych słupków możemy wywnioskować, że odsetek produkcji, które pomyślnie przechodzą test Bechdel, w ostatnich latach zwiększył się niemalże dwukrotnie w porównaniu do dekady 1970-1979, co oznacza lepszą reprezentację kobiet przed kamerami.
+
+**Wnioski**
+
+Powyższa analiza danych pozwala na potwierdzenie hipotezy o wzroście odsetka filmów z szerzej zakrojoną reprezentacją kobiet przed kamerą na przestrzeni lat. Przez niemal 40 lat **procent** produkcji pomyślnie przechodzących test Bechdel **zwiększył się niemal dwukrotnie**, co świadczy o zmianie mentalności, która zaszła w Hollywood wraz z upływem czasu. To zjawisko z pewnością można wiązać z szerzeniem świadomości społecznej w zakresie równouprawnienia, rosnącą presją na lepszą reprezentację kobiet w mediach oraz większą obecnością płci żeńskiej na wielkim ekranie.
+
+To trend świadczący o tym, że **kobiety wraz z upływem lat otrzymują więcej szans na wykazanie się w karierze aktorskiej**, co tym samym również przyczynia się do zacierania granicy między tradycyjnie pojmowanymi rolami męskimi i żeńskimi w kinie głównego nurtu. Coraz częściej kobiety nie są już wyłącznie dodatkiem do męskich bohaterów, ale pełnoprawnymi postaciami z własnymi wątkami, motywacjami i sprawczością.
+
+Podsumowując, **wzrost odsetka filmów** przechodzących test Bechdel można więc interpretować jako **odzwierciedlenie stopniowego odchodzenia od stereotypowych przedstawień** i większej ekspozycji branży filmowej na bardziej zróżnicowaną i równą reprezentację płci.
+
+\newpage
+
+# Analiza trzeciego pytania badawczego
+
+**Ewolucja Społeczna: *Struktura***
+
+Po wstępnej analizie, przyszedł czas na dogłębne zbadanie tematu. Wiemy już, że z biegiem lat, wraz ze zmieniającymi się nastrojami społecznymi, zmieniał się udział kobiet w produkcjach filmowych. Temat ten zyskał na znaczeniu i dzięki rosnącej świadomości nt. reprezentacji kobiet w mediach, mogliśmy zaobserwować wzrost liczby filmów przechodzących test Bechdela na przestrzeni dekad. Mimo różnych czynników, nie każdy producent filmowy stosuje się do kryteriów testu.
+
+Wejdźmy zatem w szczegóły – z jakich przyczyn film nie zdaje egzaminu? Czy to brak obecności kobiet, brak rozmów między nimi, czy może rozmowy o mężczyznach, które decydują o wyniku? Na podstawie analizy danych w tym punkcie spróbujemy odpowiedzieć na pytanie, która z tych przyczyn jest dominująca, a także, jak zmieniały się te czynniki na przestrzeni lat.
+
+**Postawione pytanie badawcze**
+
+**Struktura porażki – dlaczego filmy nie zdają testu Bechdel?** Która ze szczegółowych przyczyn niezdania testu (brak kobiet, brak rozmów czy rozmowy o mężczyznach) występuje w analizowanym zbiorze najczęściej?
+
+**Hipoteza**
+
+W perspektywie czasu filmy, które nie przechodzą pomyślnie testu Bechdel, nie zdają go głównie z powodu braku rozmów między kobietami, a nie z powodu ich całkowitego braku na ekranie.
+
+**Badania**
+
+W tym punkcie analizie poddano zmienną kategoryczną *Wynik_prosty*. Dane przefiltrowano na podstawie kolumny *Werdykt*, gdzie liczył się jedynie wynik *FAIL*, a później pogrupowano otrzymane wyniki na podstawie kolumny *Wynik_prosty* (zliczenie wystąpień *nowomen*/*notalk*/*men*/*dubious*). Kategoria *dubious* została zaliczona do przyczyn niezdania testu, ponieważ oznacza, że trudno jednoznacznie stwierdzić, czy film przeszedł test Bechdel, dlatego traktujemy ją jako wynik niejednoznaczny.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+
+df_fail <- df %>%
+  filter(Werdykt == "FAIL") %>%
+  mutate(
+    Przyczyna = factor(
+      Wynik_prosty,
+      levels = c("nowomen", "notalk", "men", "dubious"),
+      labels = c("Brak kobiet", "Brak rozmów", "Rozmowy o mężczyznach", "Wynik niejednoznaczny")
+    )
+  )
+
+przyczyny_tab <- df_fail %>%
+  count(Przyczyna, name = "Liczba_filmow") %>%
+  mutate(
+    Procent = 100 * Liczba_filmow / sum(Liczba_filmow)
+  ) %>%
+  arrange(desc(Liczba_filmow))
+
+przyczyny_tab %>%
+  kable(
+    digits = 1,
+    caption = "Liczebność i procentowy udział poszczególnych przyczyn niezdania testu Bechdel",
+    col.names = c("Przyczyna niezdania testu", "Liczba filmów", "Procent filmów"),
+    booktabs = TRUE
+  ) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+
+```
+
+Otrzymane wyniki jednoznacznie potwierdzają naszą hipotezę. Jak widać na powyższej tabeli, brak rozmów wśród kobiet pojawia się jako najczęstsza przyczyna niezaliczenia testu Bechdel. Co ciekawe, ten wynik stanowi 51,9%, a więc ponad połowę wszystkich filmów o negatywnej ocenie testu. Na drugim miejscu widnieje odpowiedź rozmowy o mężczyznach z 19,6%. Dwie ostatnie odpowiedzi oscylują w granicach 140-145 filmów (następująco: wynik niejednoznaczny wynosi 142 filmy, a brak kobiet natomiast 141 filmów). Warto zwrócić szczególną uwagę na ostatnie miejsce w tabeli, które zajmuje brak kobiet w filmach. To oznacza, że ze względu na panujące nastroje społeczne oraz szerzenie świadomości nt. równouprawnienia reżyserzy mimo wszystko starają się uwzględniać kobiety w filmach, mimo, iż nie prowadzą one żadnej rozmowy między sobą (trend ten utrzymał się od dawnych czasów, co zobrazujemy w dalszej części badań).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+#| dev: cairo_pdf 
+
+df_fail_trend <- df_fail %>%
+  mutate(
+    Rok = as.numeric(Rok_produkcji),
+    Dekada = (Rok %/% 10) * 10   
+  ) %>%
+  group_by(Dekada, Przyczyna) %>%
+  summarise(
+    Liczba = n(),
+    .groups = "drop_last"
+  ) %>%
+  mutate(
+    Procent = 100 * Liczba / sum(Liczba)  
+  ) %>%
+  ungroup()
+
+ggplot(df_fail_trend, aes(x = Dekada, y = Procent, color = Przyczyna)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_x_continuous(breaks = sort(unique(df_fail_trend$Dekada))) +
+  labs(
+    title = "Zmiana struktury przyczyn niezdania testu Bechdel",
+    x = "Lata",
+    y = "Procent filmów wśród FAIL",
+    color = "Przyczyna niezdania"
+  ) +
+  theme_minimal()+
+  theme(
+    plot.title = element_text(face = "bold"),
+    text = element_text(family = "Times New Roman") 
+  )
+```
+
+Dane przedstawione na powyższym wykresie dają informacje o tym, jak rozkładały się procenty przyczyn niezdawania testu Bechdel na przeciągu lat. Jasno widoczne jest, iż nieustannie, od 1970 roku, *brak rozmów* wybija się na tle innych odpowiedzi, utrzymując się na poziomie 50%, zaliczając jedynie spadek do 40% w dekadzie 1980-1989. Odpowiedź *rozmowy o mężczyznach* pozostaje niezmiennie w granicach 20%. Zmianę możemy zaobserwować w trendzie *wyniku jednoznaczego*, gdzie liczba filmów trudna do sklasyfikowania rośnie od lat 90, osiągając w latach 2010-2013 najwyższy dotychczas wskaźnik wynosi 18%. Ten wynik może świadczyć o tym, iż reprezentacja płci żeńskiej na wielkim ekranie ulega zwiększeniu, lecz mimo tego niektórzy producenci wciąż mają problem z odpowiednim przedstawieniem kobiecych ról w filmie. W poprzedniej dekadzie najmniej istotną spośród wszystkich przyczyn niezdania była odpowiedź *brak kobiet* w filmie, która ustąpiła po raz pierwszy od lat 70 *wynikowi niejednoznacznemu*. Zdaje się więc, iż w obecnych czasach obecność kobiet przed kamerami stała się wszechobecnym standardem w Hollywood.
+
+**Wnioski**
+
+Z analizy można wywnioskować, iż postawiona przez nas hipoteza jest prawdziwa. W filmach, które nie przechodzą pomyślnie testu Bechdel, **ich główną przyczyną niezdania jest brak rozmowy między kobietami**, a nie ich całkowita abscencja w produkcji. Ten problem wymieniany jest jako ponad połowa wszystkich odpowiedzi związanych z niezaliczeniem testu.
+
+Wzrost odpowiedzi *wynik niejednoznaczny* na przestrzeni lat mówi o tym, że coraz większa liczba produkcji stara się uwzględniać reprezentację płci żeńskiej na wielkim ekranie, jednak mimo tego producenci dalej nie posiadają odpowiedniej wiedzy, w jaki sposób opisać interakcje między kobietami.
+
+Podsumowując, wśród filmów niezmiennie od kilkudziesięciu lat dominuje brak rozmów między aktorkami, lecz warto zwrócić uwagę na wzrost odpowiedzi wynik niejednoznaczny, który można interpretować jako **starania reżyserów o większą inkluzywność płci pięknej** na wielkim ekranie.
+
+\newpage
+
+# Analiza czwartego pytania badawczego
+
+**Wielki Finał: *Zyski***
+
+Film trafił do kin. To oznacza jedno – nadszedł czas oczekiwania na wyniki boxoffice. To, jak produkcja poradzi sobie na wielkim ekranie, zależy od wielu czynników. Czy jednym z nich jest obecność kobiet przed kamerami?
+
+Pora na ostateczny sprawdzian. Przekonamy się, czy i w jaki sposób wyniki testu Bechdela wpływają na dochody produkcji. Czy uprzedzenia producentów (z Rozdziału 1) są uzasadnione ekonomicznie? Czy filmy 'kobiece' faktycznie zarabiają mniej? Analiza danych przeprowadzona przez nas w tym punkcie postara się odpowiedzieć na powyższe pytania.
+
+**Postawione pytanie badawcze**
+
+**Czy równość popłaca? Związek między testem Bechdel a zyskami.** Czy istnieje statystycznie istotna różnica w wysokości międzynarodowych przychodów (skorygowanych o inflację) pomiędzy filmami zdającymi a niezdającymi testu Bechdel?
+
+**Hipoteza**
+
+Filmy, które nie zdają testu (czyli są skupione na mężczyznach), zarabiają więcej.
+
+**Badania**
+
+W tym rozdziale przeanalizujemy zmienną ciągłą względem kategorycznej, gdzie porównamy rozkładu wartości zmiennej *Przychod_Swiat_2013* (przychód filmu skorygowany o inflację) w zależności od grup wyznaczonych przez zmienną Werdykt (wynik testu Bechdela: *PASS*/*FAIL*).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+
+stats_przychod <- df %>%
+group_by(Werdykt) %>%
+summarise(
+`Średni przychód`   = mean(Przychod_Swiat_2013, na.rm = TRUE),
+`Mediana przychodu` = median(Przychod_Swiat_2013, na.rm = TRUE),
+`Liczba filmów`     = sum(!is.na(Przychod_Swiat_2013)),
+.groups = "drop"
+)
+
+kable(
+stats_przychod,
+digits = 0,
+format.args = list(big.mark = " "),
+caption = "Średni i medianowy przychód światowy (w USD z 2013 r.) w grupach PASS i FAIL",
+booktabs = TRUE
+) %>%
+kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+Powyższa tabela bardzo dobrze obrazuje, w jaki sposób werdykt testu Bechdel wpływa na przychód filmu. Możemy zaobserwować, że porównanie ze sobą dwóch odpowiedzi *FAIL*/*PASS* wskazuje na znaczącą różnicę między przychodem produkcji spełniających kryteria testu, a tych, które ich nie spełniają. Średnia oraz mediana przychodów wszystkich produkcji z obu kategorii świadczy o tym, iż filmy, które nie zdają testu Bechdel (odpowiedź *FAIL*), mogą średnio pochwalić się lepszymi wynikami kasowymi, niż te, które go zdają (odpowiedź *PASS*). Różnica w średnich przychodach filmów z obu kategorii jest wysoka, jest to bowiem aż **55 169 847 dolarów** (!), zaś różnica median to **28 993 452 dolarów**. Oba te wyniki są interesujące oraz dostarczają nam kolejnych informacji do analizy danych. Musimy jednak zwrócić również uwagę na liczbę produkcji w obu kategoriach, czyli czy na końcowe wyniki mogą wpływać różnice w liczbie filmów, w których reprezentacja płci żeńskiej jest okrojona. Liczba filmów w kategorii *FAIL* jest o niemal 200 ekranizacji większa od liczby filmów w kategorii *PASS*, co może znacząco wpływać na wyniki średnich i median, a także na ogólny obraz analizy.
+
+Przejdźmy teraz do bardziej szczegółowej analizy, do której wykorzystamy wyniki przedstawione na wykresie pudełkowym:
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+#| dev: cairo_pdf
+
+df_przychod <- df %>%
+  filter(!is.na(Przychod_Swiat_2013),
+         Przychod_Swiat_2013 > 0)
+
+q95 <- quantile(df_przychod$Przychod_Swiat_2013, 0.95, na.rm = TRUE)
+
+ggplot(df_przychod, aes(x = Werdykt, y = Przychod_Swiat_2013)) +
+  geom_boxplot(
+    fill = "deeppink3",
+    alpha = 0.7,
+    width = 0.4,
+    outlier.alpha = 0.7,
+    outlier.size = 2,
+    outlier.colour = "cyan4"
+  ) +
+  coord_cartesian(ylim = c(0, q95)) + 
+  scale_y_continuous(
+    labels = dollar_format(prefix = "$", big.mark = " ", decimal.mark = ",")
+  ) +
+  labs(
+    title = "Rozkład przychodów światowych (grupy PASS i FAIL)",
+    x = "Wynik testu Bechdel",
+    y = "Przychód światowy (USD, skorygowany do 2013 r.)"
+  ) +
+  theme_minimal()+
+  theme(
+    plot.title = element_text(face = "bold"),
+    text = element_text(family = "Times New Roman") 
+  )
+```
+
+Wykres pudełkowy podaje trzy informacji:
+
+1.  **Mediany**: Mediana w pudełku z kategorią *FAIL* znajduje się minimalnie wyżej niż w pudełku z kategorią *PASS*. Świadczy to o tym, że przeciętny film, który nie spełnia kryteriów testu Bechdel, ma większy przychód od produkcji, która spełnia te kryteria.
+
+2.  **Rozstęp międzykwartylowy**: Pudełko dla kategorii *FAIL* jest wyższe i bardziej rozciągnięte w górę niż w przypadku kategorii *PASS*. Świadczy to o znacznie większej zmienności przychodów wśród filmów skupionych na mężczyznach. W tej grupie zdarzają się zarówno spektakularne hity, jak i wyniki przeciętne, co sprawia, że „rozrzut” finansowy jest duży. Z kolei pudełko kategorii *PASS* jest niższe i położone niżej na osi Y, co sugeruje, że przychody tych filmów są bardziej skoncentrowane (jednorodne), ale jednocześnie oscylują wokół niższych wartości rynkowych niż w grupie *FAIL*.
+
+3.  **Wartości odstające**: Nad pudełkami z obu kategorii znajduje się wiele wartości odstających osiągających wysoki wynik, lecz wartości odstające z kategorii *PASS* są bardziej zróżnicowane i niższe w porównaniu z kategorią *FAIL*. Tam nagromadzenie filmów z wielkimi przychodami jest większe, co wskazuje na średnio lepsze wyniki kasowe produkcji nieskoncentrowanych na kobietach.
+
+\newpage
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+
+top5_fail <- df %>%
+  filter(Werdykt == "FAIL") %>%
+  filter(!is.na(Przychod_Swiat_2013)) %>%
+  arrange(desc(Przychod_Swiat_2013)) %>%
+  slice_head(n = 10) %>%
+  select(Tytul, Przychod_Swiat_2013)   
+
+kable(
+  top5_fail,
+  digits = 0,
+  format.args = list(big.mark = " "),
+  col.names = c("Tytuł filmu", "Przychód światowy (USD, 2013)"),
+  caption = "Top 10 filmów z wynikiem FAIL o największych przychodach światowych.",
+  booktabs = TRUE
+) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.align: 'center'
+
+top5_pass <- df %>%
+  filter(Werdykt == "PASS") %>%
+  filter(!is.na(Przychod_Swiat_2013)) %>%
+  arrange(desc(Przychod_Swiat_2013)) %>%
+  slice_head(n = 10) %>%
+  select(Tytul, Przychod_Swiat_2013)   
+
+kable(
+  top5_pass,
+  digits = 0,
+  format.args = list(big.mark = " "),
+  col.names = c("Tytuł filmu", "Przychód światowy (USD, 2013)"),
+  caption = "Top 10 filmów z wynikiem PASS o największych przychodach światowych.",
+  booktabs = TRUE
+) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+
+```
+
+Aby zbadać słuszność postawionej hipotezy, na koniec przeanalizujemy wyniki dwóch tabel, zestawiających TOP 10 najbardziej dochodowych produkcji, podzielonych według zdawalności testu Bechdel. Jak widać na pierwszy rzut oka, zarówno filmy spełniające, jak i niespełniające testu Bechdel osiągają duże przychody, jednak średnio wyższe przychody w TOP 10 generują produkcje z kategorii *FAIL*, czyli te, w których kobiety odgrywają mniejszą rolę. Jako ciekawą rzecz można wymienić, iż "Titanic", mimo że zdający test Bechdel, osiągnął największe zyski z produkcji spośród wszystkich filmów, zarabiając **3 171 930 973 USD** i plasując się na czele stawki. Porównując jednak ze sobą kolejno numerami miejsc produkcje i ich zarobki, możemy stwierdzić, iż średnio większe wyniki osiągają filmy z kategorii *FAIL* (2. miejsce *FAIL* 3 022 588 801 USD, *PASS* 2 111 900 435 USD, 3. miejsce *FAIL* 2 037 236 823 USD, *PASS* 1 669 905 770 USD itd.). Ta tendencja powtarza się do końca porównywań przychodów z obu tabelek i pozwala na dedukcję następnujących informacji. Mimo, iż filmy, które nie spełniają testu Bechdel, osiągają średnio wyższe przychody, to przykłady takie jak "Titanic" pokazują, że filmy z większą reprezentacją kobiet również mogą osiągnąć spektakularne wyniki kasowe.
+
+**Wnioski**
+
+Analiza danych pokazuje, iż postawiona przez nas hipoteza jest w dużej mierze słuszna. Produkcje, w których dominują mężczyźni, osiągają średnio wyższe przychody niż produkcje stawiające na role kobiece. Różnica w średnich przychodach wynosi **55 169 847 USD**, a mediana **28 993 452 USD** (na korzyść kategorii *FAIL*) co potwierdza, że filmy z dominującymi postaciami męskimi generują większe dochody.
+
+Wysoka rozpiętość przychodów produkcji z kategorii *FAIL* na wykresie pudełkowym świadczy o tym, że średnio filmy niezdające testu Bechdela mogą pochwalić się wyższymi zarobkami i to one osiągają większy sukces na arenie międzynarodowej. Filmy, w których reprezentacja żeńska jest mniejsza, częściej są bardziej dochodowe, o czym mówi większe natężenie wartości odstających w górnej granicy dla kategorii *FAIL*.
+
+Podumowując, choć filmy, które nie przechodzą testu Bechdela, średnio osiągają wyższe przychody, przykłady takie jak "Titanic" pokazują, że **produkcje z większą reprezentacją kobiet również mogą osiągnąć bardzo dobre dochody**.
+
+\newpage
+
+# Podsumowanie
+
+Przeprowadzona analiza danych pozwoliła nam na kompleksowe spojrzenie na ewolucję roli kobiet w światowej kinematografii na przestrzeni ponad czterdziestu lat. Badanie objęło aspekty czasowe, strukturę scenariuszy oraz realia ekonomiczne branży filmowej.
+
+**Dynamika zmian na przestrzeni dekad**
+
+Badanie potwierdziło hipotezę o progresywnym wzroście reprezentacji kobiet. Na przestrzeni analizowanych lat odsetek filmów spełniających kryteria testu Bechdel uległ niemal podwojeniu, osiągając swój szczyt w pierwszej dekadzie XXI wieku. Świadczy to o trwałej zmianie w podejściu twórców do konstruowania ról żeńskich, mimo że ostatnie lata objęte analizą wskazują na lekkie wyhamowanie tego trendu.
+
+**Bariery w komunikacji ekranowej**
+
+Analiza strukturalna przyczyn „porażki” filmów wykazała, że problemem rzadko jest całkowita nieobecność kobiet w obsadzie. Głównym czynnikiem uniemożliwiającym zaliczenie testu jest brak interakcji między kobietami. Przyczyna ta dotyczy ponad połowy wszystkich produkcji, które nie zdały testu. Wnioski wskazują, że Hollywood skutecznie wprowadziło kobiety na ekran, lecz wciąż mierzy się z trudnością w budowaniu dla nich autonomicznych wątków dialogowych.
+
+**Asymetria przychodów światowych**
+
+W sferze ekonomicznej analiza wykazała wyraźną różnicę w zyskach na korzyść produkcji skupionych na mężczyznach. Filmy z kategorii FAIL generują średnio wyższe przychody niż te, które pozytywnie przechodzą test Bechdel. Wykresy rozkładu potwierdziły, że choć rynek filmów zdominowanych przez mężczyzn charakteryzuje się większą zmiennością wyników, to właśnie w tej grupie najczęściej występują rekordowe wpływy finansowe.
+
+**Potencjał komercyjny produkcji inkluzywnych**
+
+Pomimo ogólnej statystycznej przewagi finansowej filmów z kategorii *FAIL*, analiza liderów box office udowodniła, że wysoka reprezentacja kobiet nie wyklucza sukcesu na masową skalę. Najbardziej dochodowym filmem w całym zestawieniu okazał się „Titanic”, który pomyślnie przeszedł test Bechdel. Przykłady z zestawień TOP 10 pokazują, że najbardziej spektakularne sukcesy kasowe są osiągalne również dla produkcji stawiających na rozbudowane i wielowymiarowe role żeńskie.
+
+**Wniosek końcowy**
+
+Całość przeprowadzonego badania rzuca światło na swoisty paradoks współczesnego kina: choć ekranowe lustro z każdą dekadą odbija coraz więcej kobiecych twarzy, ich głosy wciąż często pozostają przytłumione przez tradycyjne struktury narracyjne. Branża filmowa dokonała ogromnego skoku pod względem wizualnej inkluzywności, jednak prawdziwa zmiana wciąż czeka na swój pełny rozkwit.
+
+Analiza ekonomiczna sugeruje, że Hollywood wciąż porusza się po bezpiecznych, utartych szlakach, obawiając się ryzyka finansowego związanego z odejściem od męskocentrycznych wzorców. Statystyczna przewaga zysków produkcji z kategorii *FAIL* pokazuje, jak silnie zakorzenione są te schematy w machinie produkcyjnej. Jednak sukcesy formatu „Titanica” stanowią potężny kontrargument. Udowadniają one, że największe triumfy kinematografii rodzą się tam, gdzie odwaga w kreowaniu wielowymiarowych relacji żeńskich spotyka się z uniwersalną, epicką opowieścią.
+
+Ostatecznym wyzwaniem dla przyszłych pokoleń twórców nie jest już zatem samo „wypełnienie kadru” obecnością kobiet, lecz nadanie im pełnej narracyjnej autonomii. Wyniki badania sugerują, że prawdziwa rewolucja w kinie dokona się w momencie, gdy dialog między kobietami przestanie być traktowany jako „wymóg do zaliczenia”, a stanie się naturalną i dochodową częścią każdej wielkiej historii.
