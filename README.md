@@ -1,5 +1,5 @@
 # Analiza_Bechdel
-# Analiza Testu Bechdel w przemyśle filmowym: Wpływ reprezentacji kobiet na finanse produkcji
+# Analiza Testu Bechdel w przemyśle filmowym. Wpływ reprezentacji kobiet na finanse produkcji
 
 ## Opis projektu
 Projekt to kompleksowe badanie analityczne oparte na danych historycznych z lat 1970–2013, mające na celu zweryfikowanie relacji między reprezentacją kobiet w kinie a finansowym sukcesem produkcji. Wykorzystując Test Bechdel jako narzędzie miary, analiza sprawdza, jak decyzje budżetowe studiów filmowych oraz globalne przychody box office korelują z obecnością i rolą bohaterek na ekranie. 
