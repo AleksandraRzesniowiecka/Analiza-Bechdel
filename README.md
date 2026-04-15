@@ -1,4 +1,3 @@
-# Analiza_Bechdel
 # Analiza Testu Bechdel w przemyśle filmowym. Wpływ reprezentacji kobiet na finanse produkcji
 
 ## Opis projektu
