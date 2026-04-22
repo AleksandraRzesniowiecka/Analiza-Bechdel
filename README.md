@@ -22,7 +22,7 @@ W ramach projektu sformułowano i zbadano cztery kluczowe hipotezy:
 Projekt bazuje na zbiorze `movies.csv` udostępnionym na otwartej licencji przez portal FiveThirtyEight. Zawiera on 1794 unikalne rekordy łączące oceny widzów (Bechdel Test Movie List) z danymi finansowymi (The Numbers). W ramach projektu przeprowadzono czyszczenie danych: standaryzację typów zmiennych, konwersję wartości finansowych, usunięcie braków danych w kluczowych wierszach (NA) oraz kategoryzację wyników na zmienne czynnikowe (factors). Wszystkie kwoty zostały skorygowane o inflację i sprowadzone do wartości dolara z 2013 roku.
 
 ## Środowisko i technologie
-Projekt został napisany w języku **R** przy użyciu środowiska Quarto/RMarkdown, co pozwala na generowanie powtarzalnych raportów analitycznych.
+Projekt został napisany w języku **R** przy użyciu środowiska Quarto/RMarkdown.
 
 Wykorzystane pakiety:
 * `tidyverse` (`dplyr`, `ggplot2`, `readr`, `tidyr`) - manipulacja danymi, grupowanie oraz tworzenie wykresów.
